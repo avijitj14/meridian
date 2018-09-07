@@ -1,0 +1,89 @@
+import RPi.GPIO as IO
+import httplib,urllib
+import time                          # calling for time to provide delays in pr$
+# import MySQLdb
+
+IO.setwarnings(False)         # do not show any warnings
+x=1
+b0 =0                                    # integers for storing 8 bits
+b1 =0
+b2 =0
+b3 =0
+b4 =0
+b5 =0
+b6 =0
+b7 =0
+IO.setmode(IO.BCM)
+IO.setup(4,IO.IN)                    # initialize GPIO Pins as input
+IO.setup(17,IO.IN)
+IO.setup(27,IO.IN)
+IO.setup(22,IO.IN)
+IO.setup(5,IO.IN)
+IO.setup(6,IO.IN)
+IO.setup(13,IO.IN)
+IO.setup(19,IO.IN)
+temp_chan0=0
+# create the basic connection object
+# db = MySQLdb.connect( host='localhost', user='TempUser1',passwd='O2IIoT',db='$
+
+#a cursor object is required to execute SQL commands on the database
+# cur=db.cursor()
+# logTemp = "INSERT INTO sensorTemp (tdate,ttime,tchan,ttemp) VALUES (%s, %s, %$
+while 1:
+    #get the current system date in the format yyyy/mm/dd
+    sample_date = time.strftime("%Y:%m:%d")
+
+    #get the current system time in the 24 hours format
+    sample_time = time.strftime("%H:%M:%S")                                    $
+    if (IO.input(19) == True):
+        time.sleep(0.001)
+        if (IO.input(19) == True):
+            b7=1                                       # if pin19 is high bit7 $
+    if (IO.input(13) == True):
+        time.sleep(0.001)
+        if (IO.input(13) == True):
+            b6=1                                      # if pin13 is high bit6 i$
+    if (IO.input(6) == True):
+        time.sleep(0.001)
+        if (IO.input(6) == True):
+            b5=1
+    if (IO.input(5) == True):
+        time.sleep(0.001)
+        if (IO.input(5) == True):
+            b4=1                                     # if pin5 is high bit4 is $
+    if (IO.input(22) == True):
+        time.sleep(0.001)
+        if (IO.input(22) == True):
+            b3=1                                     # if pin22 is high bit3 is$
+    if (IO.input(27) == True):
+        time.sleep(0.001)
+            b2=1                                    # if pin27 is high bit2 is $
+
+    if (IO.input(17) == True):
+        time.sleep(0.001)
+        if (IO.input(17) == True):
+            b1=1                                    # if pin17 is high bit1 is $
+    if (IO.input(4) == True):
+        time.sleep(0.001)
+        if (IO.input(4) == True):
+            b0=1                                    # if pin4 is high bit0 is t$
+
+    x = (1*b0)+(2*b1)
+    x = x+(4*b2)+(8*b3)
+    x = x+(16*b4)+(32*b5)
+    x = x+(64*b6)+(128*b7)                    # representing the bit values fro$
+    y=(3.3/128)*x
+    y=round(y,3)
+    print y
+    params = urllib.urlencode({'field3': y,'key':'8P2XE4CNMFNCVZPS'})
+    headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "t$
+    conn = httplib.HTTPConnection("api.thingspeak.com:80")
+    conn.request("POST", "/update", params, headers)
+    response = conn.getresponse()
+    print response.status, response.reason
+    data = response.read()
+    conn.close()
+    #insert all of the channel temp data into the sensorTemp table
+  #  cur.execute(logTemp, (sample_date, sample_time, temp_chan0, y))           $
+    b0=b1=b2=b3=b4=b5=b6=b7=0        # reset values
+    time.sleep(1)
