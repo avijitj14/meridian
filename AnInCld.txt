@@ -1,3 +1,5 @@
+#Code for machine health monitoring IoT device.
+
 import RPi.GPIO as IO
 import httplib,urllib
 import time                          # calling for time to provide delays in pr$
