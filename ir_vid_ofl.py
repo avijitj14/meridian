@@ -1,3 +1,5 @@
+#Code for the offline implementation of Smart Mirror.
+
 import os
 import time
 import RPi.GPIO as GPIO
