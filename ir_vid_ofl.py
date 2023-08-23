@@ -1,6 +1,6 @@
 #Code for the offline implementation of Smart Mirror.
 
-import os
+import os                               #Performing necessary imports
 import time
 import RPi.GPIO as GPIO
 import subprocess
@@ -15,11 +15,11 @@ from openpyxl import load_workbook
 
 GPIO.setmode(GPIO.BCM)
 
-SPI_PORT   = 0
+SPI_PORT   = 0                        #Defining SPI ports and creating SPI object
 SPI_DEVICE = 0
 mcp = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
-movie=("/home/pi/Videos/Experience The Residence by Etihad Airways.mp4")
+movie=("/home/pi/Videos/Experience The Residence by Etihad Airways.mp4")       #Uploading advertisement video
 #black=("/home/pi/Videos/Black Screen for 10 minutes.mp4")
 s_no="000000004287dd7f"
 loc="GSC GrNoida 1"
@@ -35,10 +35,10 @@ for i in range(1,11):
 ws['N5']='Total Views'
 ws['N7']='Last 2 Hours'"""
 
-wb = load_workbook('Log.xlsx')
+wb = load_workbook('Log.xlsx')                    #Excel workbook for logging and analytics 
 ws = wb.active
 
-def wb_save(hr):
+def wb_save(hr):                                  #Method for saving
        global views0
        ws['O5']=views
        if(hr==0 and (not flag_ap)):
@@ -85,14 +85,14 @@ try:
              present=False
              
              #print mcp.read_adc(0)
-             while((mcp.read_adc(0))<50):
+             while((mcp.read_adc(0))<50):                            #condition for adc actuation (screen off)
                  #print(mcp.read_adc(0))   
                  #os.system('killall omxplayer.bin')
                  os.system('xset dpms force off')
                  time.sleep(0.1)
                  
              #os.system('killall omxplayer.bin')    
-             if((mcp.read_adc(0))>50):
+             if((mcp.read_adc(0))>50):                               #condition for adc actuation (screen on) 
                  #print(mcp.read_adc(0))   
                  #os.system('killall omxplayer.bin')
                  omxc=Popen(['omxplayer','-b',movie])
@@ -107,7 +107,7 @@ try:
                  flag_ap=1
 
              time.sleep(0.1)
-except: 
+except:                                                              #exception handling
       os.system('killall omxplayer.bin')
       os.system('sleep 1;xset dpms force on')
       player=False
